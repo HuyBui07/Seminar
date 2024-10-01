@@ -1,0 +1,17 @@
+{
+  "name": "heartbeat",
+  "version": "1.0.0",
+  "main": "heartbeat-monitor.js",
+  "scripts": {
+    "test": "node test/test-heartbeat.js",
+    "heartbeat": "node heartbeat-monitor.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "express": "^4.21.0"
+  }
+}
