@@ -4,7 +4,8 @@
   "main": "heartbeat-monitor.js",
   "scripts": {
     "test": "node test/test-heartbeat.js",
-    "heartbeat": "node heartbeat-monitor.js"
+    "heartbeat": "node techniques/heartbeat_monitor.js",
+    "timeout": "node techniques/timeout_based_algo.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +13,7 @@
   "type": "module",
   "dependencies": {
     "chalk": "^5.3.0",
+    "dotenv": "^16.4.5",
     "express": "^4.21.0"
   }
 }

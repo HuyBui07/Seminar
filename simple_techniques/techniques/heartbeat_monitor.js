@@ -1,14 +1,16 @@
 import express, { json } from "express";
 import chalk from "chalk";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Alert function to send a message to a Slack channel
 const sendAlert = async (message) => {
-  const SLACK_WEBHOOK_URL =
-    "https://hooks.slack.com/services/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";
   try {
-    const response = await fetch(SLACK_WEBHOOK_URL, {
+    const response = await fetch(process.env.SLACK_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: message }),
