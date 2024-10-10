@@ -24,12 +24,17 @@ const sendAlert = async (message) => {
     console.error("Error sending alert via Slack:", error.message);
   }
 };
+
 // Middleware to parse JSON bodies
 app.use(json());
 
 const heartbeatLastReceived = {
   "test-source": Date.now(),
 };
+const sourceLiveStatus = {
+  "test-source": true,
+};
+
 const TIMEOUT_DURATION = 5000;
 let lastIntervalId = setInterval(checkForDowntime, TIMEOUT_DURATION);
 
@@ -42,6 +47,12 @@ app.post("/heartbeat", (req, res) => {
       heartbeatLastReceived[source]
     ).toLocaleTimeString()}`
   );
+
+  // If the status was down, send an alert that the source is back up
+  if (!sourceLiveStatus[source]) {
+    sendAlert(`:tada: Source ${source} is back up! :tada:`);
+    sourceLiveStatus[source] = true;
+  }
 
   // Set an interval to check for downtime every minute
   if (lastIntervalId) {
@@ -64,6 +75,7 @@ function checkForDowntime() {
           ).toLocaleTimeString()}`
         )
       );
+      sourceLiveStatus[source] = false;
       sendAlert(`:rotating_light: Source ${source} is down! :rotating_light:`);
     }
   }
