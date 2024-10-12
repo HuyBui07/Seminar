@@ -30,12 +30,13 @@ app.use(json());
 
 // ping function to check if a component is online
 const ping = async (componentURL) => {
+  console.info(`Checking ${componentURL}`);
   try {
     const response = await fetch(componentURL, {
       method: "GET",
     });
     if (!response.ok) {
-      console.error(`Error: Received status code ${response.status}`);
+      return false;
     }
     if (response.ok) {
       return true;
@@ -45,30 +46,37 @@ const ping = async (componentURL) => {
   }
 };
 
-// Function to check for downtime
-const checkForDowntime = async (source, lastReceived) => {
-  const currentTime = Date.now();
-  if (currentTime - lastReceived > TIMEOUT_DURATION) {
-    console.error(
-      chalk.red(
-        `Downtime detected for ${source} at ${new Date(
-          currentTime
-        ).toLocaleTimeString()}`
-      )
-    );
-    await sendAlert(`Downtime detected for ${source}`);
-  } else {
-    console.info(
-      chalk.green(
-        `Response received from ${source} at ${new Date(
-          lastReceived
-        ).toLocaleTimeString()}`
-      )
-    );
-  }
+const WAITING_DURATION_IN_MILISECONDS = 10000;
+let COUNTDOWN_DURATION_IN_SECONDS = 5;
+
+// Source and URL for the component to be monitored
+const sources = {
+  "test-source": {
+    url: "http://localhost:3000/timeout",
+    liveStatus: true,
+  },
 };
 
-const TIMEOUT_DURATION = 5000;
-
-// Create an interval to check component's health every 10 seconds, on each check the component is pinged, 
-// if the response is not received within 5 seconds, an alert is sent.
+// Create an interval to check component's health every 60 seconds, on each check the component is pinged,
+// if the response is not received within 30 seconds, an alert is sent.
+setInterval(async () => {
+  for (const source in sources) {
+    const isOnline = await ping(sources[source].url);
+    const countdownInterval = setInterval(() => {
+      if (isOnline) {
+        clearInterval(countdownInterval);
+        COUNTDOWN_DURATION_IN_SECONDS = 30;
+        if (!sources[source].liveStatus) {
+          sendAlert(`:tada: ${source} is back up! :tada:`);
+          sources[source].liveStatus = true;
+        }
+      }
+      COUNTDOWN_DURATION_IN_SECONDS -= 1;
+      if (COUNTDOWN_DURATION_IN_SECONDS === 0) {
+        sendAlert(`:rotating_light: ${source} is down! :rotating_light:`);
+        sources[source].liveStatus = false;
+        COUNTDOWN_DURATION_IN_SECONDS = 30;
+      }
+    }, 1000);
+  }
+}, WAITING_DURATION_IN_MILISECONDS);
