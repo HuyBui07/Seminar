@@ -1,11 +1,7 @@
-import express, { json } from "express";
 import chalk from "chalk";
 import dotenv from "dotenv";
 
 dotenv.config();
-
-const app = express();
-const port = process.env.PORT || 3000;
 
 // Alert function to send a message to a Slack channel
 const sendAlert = async (message) => {
@@ -24,9 +20,6 @@ const sendAlert = async (message) => {
     console.error("Error sending alert via Slack:", error.message);
   }
 };
-
-// Middleware to parse JSON bodies
-app.use(json());
 
 // ping function to check if a component is online
 const ping = async (componentURL) => {

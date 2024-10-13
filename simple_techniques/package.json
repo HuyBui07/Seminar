@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "heartbeat-monitor.js",
   "scripts": {
-    "test": "node test/test-heartbeat.js",
+    "test-heartbeat": "node test/test_heartbeat.js",
     "heartbeat": "node techniques/heartbeat_monitor.js",
+    "test-timeout": "node test/test_timeout.js",
     "timeout": "node techniques/timeout_based_algo.js"
   },
   "author": "",
